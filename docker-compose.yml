@@ -1,0 +1,37 @@
+version: '1'
+services:
+  www:
+    build: .
+    ports:
+      - 80:80
+    volumes:
+      - ./www:/var/www/html/
+    links:
+      - db
+    networks:
+      - default
+  db:
+    image: mysql:5.7.28
+    environment:
+      MYSQL_USER_ROOT: root_pass
+      MYSQL_USER: rootuser
+      MYSQL_PASSWORD: mypass
+      MYSQL_DATABASE: myDb
+    volumes:
+      - ./dump:/docker-entrypoint-initdb.d
+      - persistent:/var/lib/mysql
+    networks:
+      - default
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - db:db
+    ports:
+      - 82:80
+    environment:
+      MYSQL_USER_ROOT: root_pass
+      MYSQL_USER: rootuser
+      MYSQL_PASSWORD: mypass
+      MYSQL_DATABASE: myDb
+volumes:
+  persistent:
